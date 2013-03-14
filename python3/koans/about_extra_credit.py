@@ -17,3 +17,4 @@ class AboutExtraCredit(Koan):
     # test suite in runner/path_to_enlightenment.py
     def test_extra_credit_task(self):
         pass
+ 

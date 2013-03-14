@@ -3,7 +3,6 @@
 
 import unittest
 import re
-import sys
 import glob
 
 import helper
@@ -18,7 +17,7 @@ class Sensei(MockableTestResult):
         unittest.TestResult.__init__(self)
         self.stream = stream
         self.prevTestClassName = None
-        self.tests = path_to_enlightenment.koans()
+        self.tests = path_to_enlightenment.koans()        
         self.pass_count = 0
         self.lesson_pass_count  = 0
         self.all_lessons = None
@@ -36,12 +35,12 @@ class Sensei(MockableTestResult):
                     self.lesson_pass_count += 1
 
     def addSuccess(self, test):
-        if self.passesCount():
+        if self.passesCount():            
             MockableTestResult.addSuccess(self, test)
             self.stream.writeln( \
                 "  {0}{1}{2} has expanded your awareness.{3}{4}" \
                 .format(Fore.GREEN, Style.BRIGHT, test._testMethodName, \
-                Fore.RESET, Style.NORMAL))
+                Fore.RESET, Style.NORMAL))      
             self.pass_count += 1
 
     def addError(self, test, err):
@@ -52,7 +51,7 @@ class Sensei(MockableTestResult):
     def passesCount(self):
         return not (self.failures and helper.cls_name(self.failures[0][0]) !=
                     self.prevTestClassName)
-
+        
     def addFailure(self, test, err):
         MockableTestResult.addFailure(self, test, err)
 
@@ -64,32 +63,32 @@ class Sensei(MockableTestResult):
                 if m:
                     tup = (int(m.group(0)), test, err)
                     table.append(tup)
-
+               
         if table:
             return sorted(table)
         else:
             return None
-
+         
     def firstFailure(self):
         if not self.failures: return None
-
+        
         table = self.sortFailures(helper.cls_name(self.failures[0][0]))
-
+            
         if table:
             return (table[0][1], table[0][2])
         else:
             return None
-
+    
     def learn(self):
         self.errorReport()
-
+    
         self.stream.writeln("")
         self.stream.writeln("")
         self.stream.writeln(self.report_progress())
         self.stream.writeln("")
         self.stream.writeln(self.say_something_zenlike())
-
-        if self.failures: sys.exit(-1)
+        
+        if self.failures: return
         self.stream.writeln(
             "\n{0}**************************************************" \
             .format(Fore.RESET))
@@ -97,13 +96,13 @@ class Sensei(MockableTestResult):
             .format(Fore.MAGENTA))
         self.stream.writeln(
             "\nIf you want more, take a look at about_extra_credit_task.py")
-
+        
     def errorReport(self):
         problem = self.firstFailure()
-        if not problem: return
-        test, err = problem
+        if not problem: return 
+        test, err = problem 
         self.stream.writeln("  {0}{1}{2} has damaged your "
-          "karma.".format(Fore.RED, Style.BRIGHT, test._testMethodName))
+          "karma.".format(Fore.RED, Style.BRIGHT, test._testMethodName))        
 
         self.stream.writeln("\n{0}{1}You have not yet reached enlightenment ..." \
             .format(Fore.RESET, Style.NORMAL))
@@ -124,7 +123,7 @@ class Sensei(MockableTestResult):
             m = re.search("^[^^ ].*$",line)
             if m and m.group(0):
                 count+=1
-
+            
             if count>1:
                 error_text += ("  " + line.strip()).rstrip() + '\n'
         return error_text.strip('\n')
@@ -134,9 +133,9 @@ class Sensei(MockableTestResult):
             return ""
 
         lines = err.splitlines()
-
+        
         sep = '@@@@@SEP@@@@@'
-
+        
         scrape = ""
         for line in lines:
             m = re.search("^  File .*$",line)
@@ -146,9 +145,9 @@ class Sensei(MockableTestResult):
             m = re.search("^    \w(\w)+.*$",line)
             if m and m.group(0):
                 scrape += sep + line
-
+            
         lines = scrape.splitlines()
-
+                        
         scrape = ""
         for line in lines:
             m = re.search("^.*[/\\\\]koans[/\\\\].*$",line)
@@ -157,16 +156,11 @@ class Sensei(MockableTestResult):
         return scrape.replace(sep, '\n').strip('\n')
 
     def report_progress(self):
-        koans_complete = self.pass_count
-        lessons_complete = self.lesson_pass_count
-        koans_remaining = self.total_koans() - koans_complete
-        lessons_remaining = self.total_lessons() - lessons_complete
-
-        sent1 = "You have completed {0} koans and " \
-                "{1} lessons.\n".format(koans_complete, lessons_complete)
-        sent2 = "You are now {0} koans and {1} lessons away from " \
-                "reaching enlightenment.".format(koans_remaining, lessons_remaining)
-        return sent1+sent2
+        return ("You are now {0}/{1} koans and {2}/{3} lessons away from " \
+                "reaching enlightenment".format(self.pass_count,
+                                                self.total_koans(),
+                                                self.lesson_pass_count,
+                                                self.total_lessons()))
 
     # Hat's tip to Tim Peters for the zen statements from The Zen
     # of Python (http://www.python.org/dev/peps/pep-0020/)
@@ -179,7 +173,7 @@ class Sensei(MockableTestResult):
             turn = self.pass_count % 37
 
             zenness = "";
-            if turn == 0:
+            if turn == 0:            
                 zenness = "Beautiful is better than ugly."
             elif turn == 1 or turn == 2:
                 zenness = "Explicit is better than implicit."
@@ -222,14 +216,14 @@ class Sensei(MockableTestResult):
             elif turn == 33 or turn == 34:
                 zenness = "If the implementation is easy to explain, " \
                           "it may be a good idea."
-            else:
+            else: 
                 zenness = "Namespaces are one honking great idea -- " \
                           "let's do more of those!"
-            return "{0}{1}{2}{3}".format(Fore.CYAN, zenness, Fore.RESET, Style.NORMAL);
+            return "{0}{1}{2}{3}".format(Fore.CYAN, zenness, Fore.RESET, Style.NORMAL); 
         else:
             return "{0}Nobody ever expects the Spanish Inquisition." \
                 .format(Fore.CYAN)
-
+        
         # Hopefully this will never ever happen!
         return "The temple in collapsing! Run!!!"
 
@@ -249,5 +243,5 @@ class Sensei(MockableTestResult):
             self.all_lessons = filter(lambda filename:
                                       "about_extra_credit" not in filename,
                                       self.all_lessons)
-
+            
         return self.all_lessons
